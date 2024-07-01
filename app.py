@@ -78,7 +78,7 @@ def gerar_fatura():
     if not nome or not endereco:
         return jsonify({"error": "Os campos 'nome' e 'endereco' são obrigatórios."}), 400
 
-    periodo_inicio, periodo_fim = pegar_mes_anterior()
+
     invoice_info = {
         'Nome': nome,
         'CPF': cpf,
@@ -100,11 +100,11 @@ def gerar_fatura():
     with open(file_name, 'wb') as f:
         f.write(pdf_buffer.getbuffer())
 
-    # Codificando o PDF em base64
+
     pdf_base64 = base64.b64encode(pdf_buffer.getvalue()).decode('utf-8')
     pdf_data_uri = f"data:application/pdf;base64,{pdf_base64}"
 
-    # Retornando a resposta JSON com o PDF codificado em base64
+
     return jsonify({"value": file_name, "key": pdf_data_uri})
 
 if __name__ == '__main__':
