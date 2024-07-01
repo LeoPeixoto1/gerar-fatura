@@ -1,9 +1,10 @@
-from flask import Flask, request, send_file, jsonify
+from flask import Flask, request, jsonify, send_file
 from PIL import Image
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from reportlab.lib.utils import ImageReader
 from datetime import datetime, timedelta
+import os
 import io
 
 app = Flask(__name__)
@@ -94,13 +95,14 @@ def gerar_fatura():
     image_path = 'img.jpg'
     pdf_buffer = criar_fatura(image_path, invoice_info, items)
 
-    # Salvando o arquivo PDF localmente
+    # Salvar o arquivo PDF temporariamente no diretório atual
     file_name = 'fatura.pdf'
     with open(file_name, 'wb') as f:
         f.write(pdf_buffer.getbuffer())
 
-    # Retornando a resposta JSON com o nome do arquivo
-    return jsonify({"key": file_name})
+    # Retornar o URL público do PDF gerado
+    pdf_url = f"{request.base_url}{file_name}"
+    return jsonify({"key": pdf_url})
 
 if __name__ == '__main__':
     app.run(debug=True)
