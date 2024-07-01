@@ -95,12 +95,16 @@ def gerar_fatura():
     image_path = 'img.jpg'
     pdf_buffer = criar_fatura(image_path, invoice_info, items)
 
+    file_name = 'fatura.pdf'
+    with open(file_name, 'wb') as f:
+        f.write(pdf_buffer.getbuffer())
+
     # Codificando o PDF em base64
     pdf_base64 = base64.b64encode(pdf_buffer.getvalue()).decode('utf-8')
     pdf_data_uri = f"data:application/pdf;base64,{pdf_base64}"
 
     # Retornando a resposta JSON com o PDF codificado em base64
-    return jsonify({"key": pdf_data_uri})
+    return jsonify({"value": file_name, "key": pdf_data_uri})
 
 if __name__ == '__main__':
     app.run(debug=True)
