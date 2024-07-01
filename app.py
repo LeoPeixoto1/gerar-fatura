@@ -9,12 +9,9 @@ import base64
 
 app = Flask(__name__)
 
-def pegar_mes_anterior():
+def data_hoje():
     today = datetime.today()
-    first_day_of_current_month = today.replace(day=1)
-    last_day_of_last_month = first_day_of_current_month - timedelta(days=1)
-    first_day_of_last_month = last_day_of_last_month.replace(day=1)
-    return first_day_of_last_month.strftime("%d/%m/%Y"), last_day_of_last_month.strftime("%d/%m/%Y")
+
 
 def criar_fatura(image_path, invoice_info, items):
     buffer = io.BytesIO()
@@ -74,6 +71,9 @@ def gerar_fatura():
     data = request.json
     nome = data.get('nome')
     endereco = data.get('endereco')
+    cpf = data.get('cpf')
+    periodo = data.get('periodo')
+
 
     if not nome or not endereco:
         return jsonify({"error": "Os campos 'nome' e 'endereco' são obrigatórios."}), 400
@@ -81,9 +81,10 @@ def gerar_fatura():
     periodo_inicio, periodo_fim = pegar_mes_anterior()
     invoice_info = {
         'Nome': nome,
-        'Data': datetime.today().strftime("%d/%m/%Y"),
+        'CPF': cpf,
+        'Vencimento': datetime.today().strftime("%d/%m/%Y"),
         'Endereço': endereco,
-        'Periodo': f'{periodo_inicio} - {periodo_fim}',
+        'Periodo': periodo,
         'Consumo': 250
     }
     items = [
