@@ -29,7 +29,7 @@ def criar_fatura(image_path, invoice_info, items):
 
     c.setFont("Helvetica-Bold", 14)
     c.drawString(40, text_y_start, f"Nome: {invoice_info['Nome']}")
-    c.drawString(40, text_y_start - 20, f"Data: {invoice_info['Data']}")
+    c.drawString(40, text_y_start - 20, f"Data: {invoice_info['Vencimento']}")
     c.drawString(40, text_y_start - 40, f"Endereço: {invoice_info['Endereço']}")
     c.drawString(40, text_y_start - 60, f"Período de Consumo: {invoice_info['Periodo']}")
     c.drawString(40, text_y_start - 80, f"Consumo Total: {invoice_info['Consumo']} kWh")
@@ -80,7 +80,6 @@ def gerar_fatura():
     if not nome or not endereco:
         return jsonify({"error": "Os campos 'nome' e 'endereco' são obrigatórios."}), 400
 
-    periodo_inicio, periodo_fim = pegar_mes_anterior()
     invoice_info = {
         'Nome': nome,
         'CPF': cpf,
@@ -98,16 +97,10 @@ def gerar_fatura():
     image_path = 'img.jpg'
     pdf_buffer = criar_fatura(image_path, invoice_info, items)
 
-    file_name = 'fatura.pdf'
-    with open(file_name, 'wb') as f:
-        f.write(pdf_buffer.getbuffer())
-
-    # Codificando o PDF em base64
     pdf_base64 = base64.b64encode(pdf_buffer.getvalue()).decode('utf-8')
     pdf_data_uri = f"data:application/pdf;base64,{pdf_base64}"
 
-    # Retornando a resposta JSON com o PDF codificado em base64
-    return jsonify({"value": file_name, "key": pdf_data_uri})
+    return jsonify({"value": "fatura.pdf", "key": pdf_data_uri})
 
 if __name__ == '__main__':
     app.run(debug=True)
