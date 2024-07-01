@@ -94,8 +94,13 @@ def gerar_fatura():
     image_path = 'img.jpg'
     pdf_buffer = criar_fatura(image_path, invoice_info, items)
 
-    return send_file(pdf_buffer, as_attachment=True, download_name='fatura.pdf', mimetype='application/pdf')
+    # Salvando o arquivo PDF localmente
+    file_name = 'fatura.pdf'
+    with open(file_name, 'wb') as f:
+        f.write(pdf_buffer.getbuffer())
+
+    # Retornando a resposta JSON com o nome do arquivo
+    return jsonify({"key": file_name})
 
 if __name__ == '__main__':
-    from os import environ
-    app.run(host='0.0.0.0', port=int(environ.get('PORT', 5000)))
+    app.run(debug=True)
