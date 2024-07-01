@@ -9,8 +9,13 @@ import base64
 
 app = Flask(__name__)
 
-def data_hoje():
+def pegar_mes_anterior():
     today = datetime.today()
+    first_day_of_current_month = today.replace(day=1)
+    last_day_of_last_month = first_day_of_current_month - timedelta(days=1)
+    first_day_of_last_month = last_day_of_last_month.replace(day=1)
+    return first_day_of_last_month.strftime("%d/%m/%Y"), last_day_of_last_month.strftime("%d/%m/%Y")
+
 
 
 def criar_fatura(image_path, invoice_info, items):
