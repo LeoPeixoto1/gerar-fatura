@@ -1,10 +1,11 @@
-from flask import Flask, request, send_file, jsonify
+from flask import Flask, request, jsonify
 from PIL import Image
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from reportlab.lib.utils import ImageReader
 from datetime import datetime, timedelta
 import io
+import base64
 
 app = Flask(__name__)
 
@@ -94,13 +95,12 @@ def gerar_fatura():
     image_path = 'img.jpg'
     pdf_buffer = criar_fatura(image_path, invoice_info, items)
 
-    # Salvando o arquivo PDF localmente
-    file_name = 'fatura.pdf'
-    with open(file_name, 'wb') as f:
-        f.write(pdf_buffer.getbuffer())
+    # Codificando o PDF em base64
+    pdf_base64 = base64.b64encode(pdf_buffer.getvalue()).decode('utf-8')
+    pdf_data_uri = f"data:application/pdf;base64,{pdf_base64}"
 
-    # Retornando a resposta JSON com o nome do arquivo
-    return jsonify({"value": file_name,"key":"data:application/pdf;"})
+    # Retornando a resposta JSON com o PDF codificado em base64
+    return jsonify({"key": pdf_data_uri})
 
 if __name__ == '__main__':
     app.run(debug=True)
