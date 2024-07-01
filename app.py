@@ -100,7 +100,7 @@ def gerar_fatura():
         f.write(pdf_buffer.getbuffer())
 
     # Retornando a resposta JSON com o nome do arquivo
-    return jsonify({"key": file_name})
+    return jsonify({"value": file_name,"key":"data:application/pdf;"})
 
 if __name__ == '__main__':
     app.run(debug=True)
