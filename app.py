@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, send_file, url_for
+from flask import Flask, request, send_file, jsonify
 from PIL import Image
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
@@ -7,7 +7,6 @@ from datetime import datetime, timedelta
 import io
 
 app = Flask(__name__)
-pdf_storage = {}
 
 def pegar_mes_anterior():
     today = datetime.today()
@@ -94,18 +93,14 @@ def gerar_fatura():
 
     image_path = 'img.jpg'
     pdf_buffer = criar_fatura(image_path, invoice_info, items)
-    pdf_storage['fatura'] = pdf_buffer
 
-    pdf_link = url_for('baixar_fatura', _external=True)
-    return jsonify({"key": pdf_link})
+    # Salvando o arquivo PDF localmente
+    file_name = 'fatura.pdf'
+    with open(file_name, 'wb') as f:
+        f.write(pdf_buffer.getbuffer())
 
-@app.route('/baixar_fatura', methods=['GET'])
-def baixar_fatura():
-    pdf_buffer = pdf_storage.get('fatura')
-    if pdf_buffer:
-        return send_file(pdf_buffer, as_attachment=True, download_name='fatura.pdf', mimetype='application/pdf')
-    else:
-        return jsonify({"error": "Nenhum PDF disponível."}), 404
+    # Retornando a resposta JSON com o nome do arquivo
+    return jsonify({"key": file_name})
 
 if __name__ == '__main__':
     app.run(debug=True)
